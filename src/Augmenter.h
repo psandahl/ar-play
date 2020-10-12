@@ -1,11 +1,13 @@
 #pragma once
 
+#include "Chessboard.h"
+
 #include <opencv2/core.hpp>
 
 class Augmenter {
 public:
   // Construction.
-  Augmenter() = default;
+  Augmenter();
 
   // Destruction.
   ~Augmenter() = default;
@@ -20,4 +22,7 @@ public:
   cv::Mat process(const cv::Mat& frame);
 
 private:
+
+  // The chessboard detector/calibrator.
+  Chessboard _chessboard;
 };

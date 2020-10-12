@@ -40,7 +40,7 @@ int main(int argc, char** argv)
   cv::Mat frame;
   while (capture.read(frame)) {
     cv::imshow(window, augmenter.process(frame));
-    cv::waitKey(30);
+    cv::waitKey(1);
   }
 
   cv::destroyAllWindows();
