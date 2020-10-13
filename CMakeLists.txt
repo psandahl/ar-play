@@ -10,7 +10,7 @@ link_directories(${OpenCV_LIB_DIR})
 
 set(play-lib
   src/Augmenter.cpp
-  src/Chessboard.cpp
+  src/ChessboardDetect.cpp
 )
 
 add_executable(ar-play src/main.cpp ${play-lib})

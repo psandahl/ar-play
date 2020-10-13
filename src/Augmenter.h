@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Chessboard.h"
+#include "ChessboardDetect.h"
 
 #include <opencv2/core.hpp>
 
@@ -23,6 +23,6 @@ public:
 
 private:
 
-  // The chessboard detector/calibrator.
-  Chessboard _chessboard;
+  // The chessboard detector.
+  ChessboardDetect _chessboardDetect;
 };

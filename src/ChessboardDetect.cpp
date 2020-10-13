@@ -1,16 +1,15 @@
-#include "Chessboard.h"
+#include "ChessboardDetect.h"
 
 #include <opencv2/calib3d.hpp>
 
 #include <cassert>
 
-Chessboard::Chessboard(const cv::Size& size, float meters)
+ChessboardDetect::ChessboardDetect(const cv::Size& size)
   : _size(size)
-  , _meters(meters)
 {
 }
 
-bool Chessboard::detect(const cv::Mat& image, std::vector<cv::Point2f>& points) const
+bool ChessboardDetect::detect(const cv::Mat& image, std::vector<cv::Point2f>& points) const
 {
   points.clear();
   points.resize(_size.width * _size.height);
@@ -23,7 +22,7 @@ bool Chessboard::detect(const cv::Mat& image, std::vector<cv::Point2f>& points) 
     );
 }
 
-std::vector<cv::Point2i> Chessboard::cornerPointsi(const std::vector<cv::Point2f>& points) const
+std::vector<cv::Point2i> ChessboardDetect::cornerPointsi(const std::vector<cv::Point2f>& points) const
 {
   assert(points.size() == _size.width * _size.height);
 
@@ -35,7 +34,7 @@ std::vector<cv::Point2i> Chessboard::cornerPointsi(const std::vector<cv::Point2f
     };
 }
 
-std::vector<cv::Point2d> Chessboard::cornerPointsd(const std::vector<cv::Point2f>& points) const
+std::vector<cv::Point2d> ChessboardDetect::cornerPointsd(const std::vector<cv::Point2f>& points) const
 {
   assert(points.size() == _size.width * _size.height);
 

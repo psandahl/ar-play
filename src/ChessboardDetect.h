@@ -4,21 +4,21 @@
 
 #include <vector>
 
-class Chessboard {
+class ChessboardDetect {
 public:
   // Construction.
-  Chessboard(const cv::Size& size, float meters);
+  ChessboardDetect(const cv::Size& size);
 
   // Destruction.
-  ~Chessboard() = default;
+  ~ChessboardDetect() = default;
 
   // Disabled standard methods.
-  Chessboard() = delete;
-  Chessboard(const Chessboard&) = delete;
-  Chessboard(Chessboard&&) = delete;
+  ChessboardDetect() = delete;
+  ChessboardDetect(const ChessboardDetect&) = delete;
+  ChessboardDetect(ChessboardDetect&&) = delete;
 
-  Chessboard& operator=(const Chessboard&) = delete;
-  Chessboard& operator=(Chessboard&&) = delete;
+  ChessboardDetect& operator=(const ChessboardDetect&) = delete;
+  ChessboardDetect& operator=(ChessboardDetect&&) = delete;
 
   // Check an image for a chessboard pattern.
   bool detect(const cv::Mat& image, std::vector<cv::Point2f>& points) const;
@@ -29,6 +29,6 @@ public:
 
 private:
 
+  // Dimensions of the board.
   const cv::Size _size;
-  const float _meters;
 };
