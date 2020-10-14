@@ -10,6 +10,7 @@ link_directories(${OpenCV_LIB_DIR})
 
 set(play-lib
   src/Augmenter.cpp
+  src/ChessboardCalib.cpp
   src/ChessboardDetect.cpp
 )
 

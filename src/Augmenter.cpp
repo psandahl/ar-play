@@ -5,7 +5,8 @@
 #include <vector>
 
 Augmenter::Augmenter()
-  : _chessboardDetect({ 9, 6 })
+  : _chessboardCalib({ 9, 6 }, 0.025)
+  , _chessboardDetect({ 9, 6 })
 {
 }
 
@@ -16,7 +17,13 @@ cv::Mat Augmenter::process(const cv::Mat& frame)
   std::vector<cv::Point2f> chessboardPoints;
   if (_chessboardDetect.detect(image, chessboardPoints)) {
     std::vector<cv::Point2i> cornerPoints = _chessboardDetect.cornerPointsi(chessboardPoints);
-    cv::polylines(image, cornerPoints, true, cv::Scalar(0, 255, 0));
+
+    if (_chessboardCalib.isCalibrated()) {
+      cv::polylines(image, cornerPoints, true, cv::Scalar(0, 255, 0));
+    } else {
+      cv::polylines(image, cornerPoints, true, cv::Scalar(0, 0, 255));
+      _chessboardCalib.addImagePoints(chessboardPoints, image.size());
+    }    
   }
 
   return image;

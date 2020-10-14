@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ChessboardCalib.h"
 #include "ChessboardDetect.h"
 
 #include <opencv2/core.hpp>
@@ -22,6 +23,9 @@ public:
   cv::Mat process(const cv::Mat& frame);
 
 private:
+
+  // The chessboard calibrator.
+  ChessboardCalib _chessboardCalib;
 
   // The chessboard detector.
   ChessboardDetect _chessboardDetect;
