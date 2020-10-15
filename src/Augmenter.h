@@ -5,6 +5,8 @@
 
 #include <opencv2/core.hpp>
 
+#include <vector>
+
 class Augmenter {
 public:
   // Construction.
@@ -24,9 +26,22 @@ public:
 
 private:
 
+  // Run calibration for the image.
+  void runCalibration(cv::Mat& image, const std::vector<cv::Point2f>& chessboardPoints);
+
+  // Run augmentation for the image.
+  void runAugmentation(cv::Mat& image, const std::vector<cv::Point2f>& chessboardPoints);
+
+  // The size of the board - width and height.
+  const cv::Size _boardSize;
+
   // The chessboard calibrator.
   ChessboardCalib _chessboardCalib;
 
   // The chessboard detector.
   ChessboardDetect _chessboardDetect;
+
+  // Model points representing ground zero, and used for pose calculation
+  // from the chessboard.
+  std::vector<cv::Point3d> _groundPoints;
 };
