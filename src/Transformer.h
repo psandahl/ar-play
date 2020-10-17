@@ -22,7 +22,9 @@ public:
 
 private:
 
+  cv::Mat makeE(const cv::Mat& rvec, const cv::Mat& tvec) const;
+
   cv::Mat _K;
-  cv::Mat _ext;
-  cv::Mat _model;
+  cv::Mat _E;
+  cv::Mat _M;
 };

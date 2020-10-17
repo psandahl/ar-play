@@ -1,7 +1,10 @@
 #include "Augmenter.h"
+#include "Transformer.h"
 
+#include <opencv2/calib3d.hpp>
 #include <opencv2/imgproc.hpp>
 
+#include <iostream>
 #include <vector>
 
 Augmenter::Augmenter()
@@ -45,6 +48,19 @@ void Augmenter::runCalibration(cv::Mat& image, const std::vector<cv::Point2f>& c
 
 void Augmenter::runAugmentation(cv::Mat& image, const std::vector<cv::Point2f>& chessboardPoints)
 {
-  std::vector<cv::Point2i> cornerPoints = _chessboardDetect.cornerPointsi(chessboardPoints);
-  cv::polylines(image, cornerPoints, true, cv::Scalar(0, 255, 0));
+  const std::vector<cv::Point2d> boardCornerPoints(_chessboardDetect.cornerPointsd(chessboardPoints));
+  cv::Mat rvec, tvec;
+
+  if (cv::solvePnP(_groundPoints, boardCornerPoints, _chessboardCalib.getK()
+                  , _chessboardCalib.getDistCoeffs(), rvec, tvec)) {
+    const Transformer t(_chessboardCalib.getK(), rvec, tvec);
+
+    std::vector<cv::Point2d> imagePoints;
+    t.projectPoints(_groundPoints, imagePoints);
+
+    std::cout << "> " << imagePoints[0] << std::endl;
+
+    std::vector<cv::Point2i> cornerPoints = _chessboardDetect.cornerPointsi(chessboardPoints);
+    cv::polylines(image, cornerPoints, true, cv::Scalar(0, 255, 0));
+  }
 }

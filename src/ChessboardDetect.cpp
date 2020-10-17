@@ -12,7 +12,6 @@ ChessboardDetect::ChessboardDetect(const cv::Size& size)
 bool ChessboardDetect::detect(const cv::Mat& image, std::vector<cv::Point2f>& points) const
 {
   points.clear();
-  points.resize(_size.width * _size.height);
 
   return cv::findChessboardCorners
     ( image, _size, points

@@ -5,8 +5,8 @@
 ChessboardCalib::ChessboardCalib(const cv::Size& size, float meters)
   : _size(size)
   , _meters(meters)
-  , _K(cv::Mat::eye(3, 3, CV_64F))
-  , _distCoeffs(cv::Mat::zeros(5, 1, CV_64F))
+  , _K(cv::Mat::eye(3, 3, CV_64FC1))
+  , _distCoeffs(cv::Mat::zeros(5, 1, CV_64FC1))
   , _imagePointsCollection()
   , _isCalibrated(false)
 {
