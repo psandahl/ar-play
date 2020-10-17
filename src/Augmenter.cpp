@@ -1,5 +1,4 @@
 #include "Augmenter.h"
-#include "Transformer.h"
 #include "Util.h"
 
 #include <opencv2/calib3d.hpp>
@@ -59,18 +58,27 @@ void Augmenter::runAugmentation(cv::Mat& image, const std::vector<cv::Point2f>& 
   cv::Mat rvec, tvec;
   if (cv::solvePnP(_groundPoints, boardCornerPoints, _chessboardCalib.getK()
                   , _chessboardCalib.getDistCoeffs(), rvec, tvec)) {
-
-    /*std::vector<cv::Point2f> imagePointsf;
-    cv::Mat zd(cv::Mat::zeros(5, 1, CV_64FC1));
-    cv::projectPoints(points3f(_groundPoints), rvec, tvec, _chessboardCalib.getK(), zd, imagePointsf);
-    std::cout << "p> " << imagePointsf[0] << std::endl;*/
-
     const Transformer t(_chessboardCalib.getK(), rvec, tvec);
 
-    std::vector<cv::Point2d> imageCornerPoints;
-    t.projectPoints(_groundPoints, imageCornerPoints);
-
-
-    cv::polylines(image, points2i(imageCornerPoints), true, cv::Scalar(0, 255, 0));
+    // Draw the orientation axes.
+    drawOrientationAxes(image, t);
   }
+}
+
+void Augmenter::drawOrientationAxes(cv::Mat& image, const Transformer& t) const
+{
+  std::vector<cv::Point3d> modelSpaceAxes =
+    { _groundPoints[0]
+    , _groundPoints[0] + cv::Point3d(1.0, 0.0, 0.0)
+    , _groundPoints[0] + cv::Point3d(0.0, 1.0, 0.0)
+    , _groundPoints[0] + cv::Point3d(0.0, 0.0, 1.0)
+    };
+
+  std::vector<cv::Point2d> imageSpaceAxes;
+  t.projectPoints(modelSpaceAxes, imageSpaceAxes);
+
+  std::vector<cv::Point2i> imageSpaceAxesi = points2i(imageSpaceAxes);
+  cv::line(image, imageSpaceAxesi[0], imageSpaceAxesi[1], cv::Scalar(0, 0, 255), 3);
+  cv::line(image, imageSpaceAxesi[0], imageSpaceAxesi[2], cv::Scalar(0, 255, 0), 3);
+  cv::line(image, imageSpaceAxesi[0], imageSpaceAxesi[3], cv::Scalar(255, 0, 0), 3);
 }

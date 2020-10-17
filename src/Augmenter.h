@@ -2,6 +2,7 @@
 
 #include "ChessboardCalib.h"
 #include "ChessboardDetect.h"
+#include "Transformer.h"
 
 #include <opencv2/core.hpp>
 
@@ -31,6 +32,9 @@ private:
 
   // Run augmentation for the image.
   void runAugmentation(cv::Mat& image, const std::vector<cv::Point2f>& chessboardPoints);
+
+  // Draw orientation axes.
+  void drawOrientationAxes(cv::Mat& image, const Transformer& t) const;
 
   // The size of the board - width and height.
   const cv::Size _boardSize;
