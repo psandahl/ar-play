@@ -13,6 +13,7 @@ set(play-lib
   src/ChessboardCalib.cpp
   src/ChessboardDetect.cpp
   src/Transformer.cpp
+  src/Util.cpp
 )
 
 add_executable(ar-play src/main.cpp ${play-lib})

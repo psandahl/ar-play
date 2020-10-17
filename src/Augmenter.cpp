@@ -1,5 +1,6 @@
 #include "Augmenter.h"
 #include "Transformer.h"
+#include "Util.h"
 
 #include <opencv2/calib3d.hpp>
 #include <opencv2/imgproc.hpp>
@@ -41,26 +42,35 @@ cv::Mat Augmenter::process(const cv::Mat& frame)
 
 void Augmenter::runCalibration(cv::Mat& image, const std::vector<cv::Point2f>& chessboardPoints)
 {
-  std::vector<cv::Point2i> cornerPoints = _chessboardDetect.cornerPointsi(chessboardPoints);
+  std::vector<cv::Point2i> cornerPoints = points2i(_chessboardDetect.cornerPoints(chessboardPoints));
   cv::polylines(image, cornerPoints, true, cv::Scalar(0, 0, 255));
   _chessboardCalib.addImagePoints(chessboardPoints, image.size());
 }
 
 void Augmenter::runAugmentation(cv::Mat& image, const std::vector<cv::Point2f>& chessboardPoints)
 {
-  const std::vector<cv::Point2d> boardCornerPoints(_chessboardDetect.cornerPointsd(chessboardPoints));
-  cv::Mat rvec, tvec;
+  // Get the corner points for the detected boad.
+  const std::vector<cv::Point2d> boardCornerPoints
+    (
+      points2d(_chessboardDetect.cornerPoints(chessboardPoints))
+    );
 
+  // Get a mapping to 3D-space.
+  cv::Mat rvec, tvec;
   if (cv::solvePnP(_groundPoints, boardCornerPoints, _chessboardCalib.getK()
                   , _chessboardCalib.getDistCoeffs(), rvec, tvec)) {
+
+    /*std::vector<cv::Point2f> imagePointsf;
+    cv::Mat zd(cv::Mat::zeros(5, 1, CV_64FC1));
+    cv::projectPoints(points3f(_groundPoints), rvec, tvec, _chessboardCalib.getK(), zd, imagePointsf);
+    std::cout << "p> " << imagePointsf[0] << std::endl;*/
+
     const Transformer t(_chessboardCalib.getK(), rvec, tvec);
 
-    std::vector<cv::Point2d> imagePoints;
-    t.projectPoints(_groundPoints, imagePoints);
+    std::vector<cv::Point2d> imageCornerPoints;
+    t.projectPoints(_groundPoints, imageCornerPoints);
 
-    std::cout << "> " << imagePoints[0] << std::endl;
 
-    std::vector<cv::Point2i> cornerPoints = _chessboardDetect.cornerPointsi(chessboardPoints);
-    cv::polylines(image, cornerPoints, true, cv::Scalar(0, 255, 0));
+    cv::polylines(image, points2i(imageCornerPoints), true, cv::Scalar(0, 255, 0));
   }
 }

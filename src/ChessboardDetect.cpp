@@ -21,19 +21,7 @@ bool ChessboardDetect::detect(const cv::Mat& image, std::vector<cv::Point2f>& po
     );
 }
 
-std::vector<cv::Point2i> ChessboardDetect::cornerPointsi(const std::vector<cv::Point2f>& points) const
-{
-  assert(points.size() == _size.width * _size.height);
-
-  return
-    { points[0]
-    , points[_size.width - 1]
-    , points[_size.height * _size.width - 1]
-    , points[(_size.height - 1) * _size.width]
-    };
-}
-
-std::vector<cv::Point2d> ChessboardDetect::cornerPointsd(const std::vector<cv::Point2f>& points) const
+std::vector<cv::Point2f> ChessboardDetect::cornerPoints(const std::vector<cv::Point2f>& points) const
 {
   assert(points.size() == _size.width * _size.height);
 

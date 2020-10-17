@@ -24,8 +24,7 @@ public:
   bool detect(const cv::Mat& image, std::vector<cv::Point2f>& points) const;
 
   // From a detected chessboard pattern extract the corners points for the quad.
-  std::vector<cv::Point2i> cornerPointsi(const std::vector<cv::Point2f>& points) const;
-  std::vector<cv::Point2d> cornerPointsd(const std::vector<cv::Point2f>& points) const;
+  std::vector<cv::Point2f> cornerPoints(const std::vector<cv::Point2f>& points) const;
 
 private:
 
