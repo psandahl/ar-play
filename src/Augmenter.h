@@ -2,6 +2,7 @@
 
 #include "ChessboardCalib.h"
 #include "ChessboardDetect.h"
+#include "ChessboardModel.h"
 #include "Transformer.h"
 
 #include <opencv2/core.hpp>
@@ -44,6 +45,9 @@ private:
 
   // The chessboard detector.
   ChessboardDetect _chessboardDetect;
+
+  // The chessboard model.
+  ChessboardModel _chessboardModel;
 
   // Model points representing ground zero, and used for pose calculation
   // from the chessboard.

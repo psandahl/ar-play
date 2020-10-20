@@ -4,6 +4,8 @@
 
 #include <vector>
 
+class Transformer;
+
 class ChessboardModel {
 public:
   // Construction.
@@ -19,15 +21,32 @@ public:
   ChessboardModel& operator=(const ChessboardModel&) = delete;
   ChessboardModel& operator=(ChessboardModel&&) = delete;
 
-  // Get the texture.
+  // Get the face texture.
   const cv::Mat& faceTexture() const { return _faceTexture; }
 
-  void renderFace(cv::Mat& image, const std::vector<cv::Point2d>& dstPoints) const;
+  // Get the model matrix.
+  const cv::Mat& modelMatrix() const { return _modelMatrix; }
+
+  // Set the transform for the model.
+  void setTransform(double x, double y, double z);
+
+  // Perform debug rendering of the model.
+  void renderDebug(cv::Mat& image, const Transformer& t) const;
 
 private:
+
+  // Render a textured face.
+  void renderFace(cv::Mat& image, const std::vector<cv::Point2d>& dstPoints) const;
+
   // Board dimension (should be power of two, or at least even).
   static constexpr int Size = 128;
 
-  // Chessboard texture for one face.
+  // Chessboard texture for a face.
   cv::Mat _faceTexture;
+
+  // Model matrix for the cube.
+  cv::Mat _modelMatrix;
+
+  // Model cube corners.
+  std::vector<cv::Point3d> _cornerPoints;
 };

@@ -11,6 +11,7 @@ Augmenter::Augmenter()
   : _boardSize(9, 6)
   , _chessboardCalib(_boardSize, 0.025)
   , _chessboardDetect(_boardSize)
+  , _chessboardModel()
   , _groundPoints(4)
 {
   const double halfWidth = double(_boardSize.width) * 0.5;
@@ -48,7 +49,7 @@ void Augmenter::runCalibration(cv::Mat& image, const std::vector<cv::Point2f>& c
 
 void Augmenter::runAugmentation(cv::Mat& image, const std::vector<cv::Point2f>& chessboardPoints)
 {
-  // Get the corner points for the detected boad.
+  // Get the corner points for the detected chessboard.
   const std::vector<cv::Point2d> boardCornerPoints
     (
       points2d(_chessboardDetect.cornerPoints(chessboardPoints))
@@ -58,7 +59,13 @@ void Augmenter::runAugmentation(cv::Mat& image, const std::vector<cv::Point2f>& 
   cv::Mat rvec, tvec;
   if (cv::solvePnP(_groundPoints, boardCornerPoints, _chessboardCalib.getK()
                   , _chessboardCalib.getDistCoeffs(), rvec, tvec)) {
-    const Transformer t(_chessboardCalib.getK(), rvec, tvec);
+
+    // A mapping from the chessboard marker and the ground points is found.
+    // Create a transformer from model coordinate to image coordinates.
+    const Transformer t(_chessboardCalib.getK(), rvec, tvec, _chessboardModel.modelMatrix());
+
+    // Render the model.
+    _chessboardModel.renderDebug(image, t);
 
     // Draw the orientation axes.
     drawOrientationAxes(image, t);
