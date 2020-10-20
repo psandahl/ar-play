@@ -21,7 +21,7 @@ Transformer::Transformer(const cv::Mat& K, const cv::Mat& rvec, const cv::Mat& t
 Transformer::Transformer(const cv::Mat& K, const cv::Mat& rvec, const cv::Mat& tvec, const cv::Mat& model)
   : _K(K)
   , _E(makeE(rvec, tvec))
-  , _M(cv::Mat::eye(4, 4, CV_64FC1))
+  , _M(model)
 {
 }
 

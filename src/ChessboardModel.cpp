@@ -28,14 +28,14 @@ ChessboardModel::ChessboardModel()
   _cornerPoints[6] = {  1.0,  1.0,  1.0 };
   _cornerPoints[7] = { -1.0,  1.0,  1.0 };
 
-  //setTransform(100.0, 0.0, 0.0);
+  //setTransform(0.0, 1.0, -5.0);
 }
 
 void ChessboardModel::setTransform(double x, double y, double z)
 {
-  _modelMatrix.at<double>(3, 0) = x;
-  _modelMatrix.at<double>(3, 1) = y;
-  _modelMatrix.at<double>(3, 2) = z;
+  _modelMatrix.at<double>(0, 3) = x;
+  _modelMatrix.at<double>(1, 3) = y;
+  _modelMatrix.at<double>(2, 3) = z;
 }
 
 void ChessboardModel::renderDebug(cv::Mat& image, const Transformer& t) const
