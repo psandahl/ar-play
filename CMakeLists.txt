@@ -12,6 +12,7 @@ set(play-lib
   src/Augmenter.cpp
   src/ChessboardCalib.cpp
   src/ChessboardDetect.cpp
+  src/ChessboardModel.cpp
   src/Transformer.cpp
   src/Util.cpp
 )

@@ -35,6 +35,17 @@ std::vector<cv::Point2d> points2d(const std::vector<cv::Point2f>& points)
   return points2d;
 }
 
+std::vector<cv::Point2f> points2d(const std::vector<cv::Point2d>& points)
+{
+  std::vector<cv::Point2f> points2f;
+
+  for (const cv::Point2d& point : points) {
+    points2f.push_back({ float(point.x), float(point.y) });
+  }
+
+  return points2f;
+}
+
 std::vector<cv::Point3f> points3f(const std::vector<cv::Point3d>& points)
 {
   std::vector<cv::Point3f> points3f;
