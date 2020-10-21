@@ -9,6 +9,7 @@ ChessboardModel::ChessboardModel()
   : _faceTexture(Size, Size, CV_8UC3, cv::Scalar::all(255))
   , _modelMatrix(cv::Mat::eye(4, 4, CV_64FC1))
   , _cornerPoints(8)
+  , _faces(6)
 {
   // Render the face texture.
   cv::rectangle(_faceTexture, { 0, 0 }, { Size / 2 - 1, Size / 2 - 1 },
@@ -28,6 +29,14 @@ ChessboardModel::ChessboardModel()
   _cornerPoints[6] = {  1.0,  1.0,  1.0 };
   _cornerPoints[7] = { -1.0,  1.0,  1.0 };
 
+  // Faces with indices to the corner points.
+  _faces[0] = { 0, 1, 2, 3 };
+  _faces[1] = { 3, 2, 6, 7 };
+  _faces[2] = { 2, 1, 5, 6 };
+  _faces[3] = { 1, 0, 4, 5 };
+  _faces[4] = { 0, 3, 7, 4 };
+  _faces[5] = { 7, 6, 5, 4 };
+
   //setTransform(0.0, 1.0, -5.0);
 }
 
@@ -40,6 +49,33 @@ void ChessboardModel::setTransform(double x, double y, double z)
 
 void ChessboardModel::renderDebug(cv::Mat& image, const Transformer& t) const
 {
+  for (const Face& face : _faces) {
+    std::vector<cv::Point3d> objectPoints =
+      { _cornerPoints[face.p0]
+      , _cornerPoints[face.p1]
+      , _cornerPoints[face.p2]
+      , _cornerPoints[face.p3]
+      };
+    std::vector<cv::Point2d> imagePointsd;
+    t.projectPoints(objectPoints, imagePointsd);
+
+    std::vector<cv::Point2i> imagePointsi(points2i(imagePointsd));
+    cv::polylines(image, imagePointsi, true, cv::Scalar(255, 0, 0));
+
+    cv::Vec3d toOne(_cornerPoints[face.p1] - _cornerPoints[face.p0]);
+    cv::Vec3d toThree(_cornerPoints[face.p3] - _cornerPoints[face.p0]);
+    cv::Vec3d normal = cv::normalize(toThree.cross(toOne));
+
+    cv::Point3d normReach = _cornerPoints[face.p0] + cv::Point3d(normal);
+
+    std::vector<cv::Point2d> normalPointsd;
+    t.projectPoints({_cornerPoints[face.p0], normReach}, normalPointsd);
+
+    std::vector<cv::Point2i> normalPointsi(points2i(normalPointsd));
+    cv::line(image, normalPointsi[0], normalPointsi[1], cv::Scalar(0, 255, 255));
+  }
+
+#if 0
   std::vector<cv::Point2d> imagePointsd;
   t.projectPoints(_cornerPoints, imagePointsd);
 
@@ -49,6 +85,7 @@ void ChessboardModel::renderDebug(cv::Mat& image, const Transformer& t) const
     cv::Scalar col = n++ < 4 ? cv::Scalar(0, 255, 0) : cv::Scalar(0, 0, 255);
     cv::circle(image, p, 2, col, cv::FILLED);
   }
+#endif
 }
 
 void ChessboardModel::renderFace(cv::Mat& image, const std::vector<cv::Point2d>& dstPoints) const

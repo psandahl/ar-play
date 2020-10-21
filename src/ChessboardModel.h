@@ -35,6 +35,21 @@ public:
 
 private:
 
+  struct Face {
+    Face()
+      : p0(0), p1(0), p2(0), p3(0)
+    {}
+
+    Face(int _p0, int _p1, int _p2, int _p3)
+      : p0(_p0), p1(_p1), p2(_p2), p3(_p3)
+    {}
+
+    int p0;
+    int p1;
+    int p2;
+    int p3;
+  };
+
   // Render a textured face.
   void renderFace(cv::Mat& image, const std::vector<cv::Point2d>& dstPoints) const;
 
@@ -49,4 +64,7 @@ private:
 
   // Model cube corners.
   std::vector<cv::Point3d> _cornerPoints;
+
+  // Cube faces.
+  std::vector<Face> _faces;
 };
