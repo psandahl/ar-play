@@ -44,6 +44,11 @@ void Transformer::projectPoints(const std::vector<cv::Point3d>& objectPoints,
   }
 }
 
+cv::Point3d Transformer::modelMatrixTransform(const cv::Point3d& point) const
+{
+  return toEucl3d(_M * toHom3d(point));
+}
+
 cv::Point3d Transformer::centerOfProjection() const
 {
   cv::Mat m = rot().t() * trans().mul(-1.0);

@@ -20,6 +20,9 @@ public:
   // Project a set of object points to image points.
   void projectPoints(const std::vector<cv::Point3d>& objectPoints, std::vector<cv::Point2d>& imagePoints) const;
 
+  // Transform the object point using the model matrix.
+  cv::Point3d modelMatrixTransform(const cv::Point3d& point) const;
+
   // Get the center of projection.
   cv::Point3d centerOfProjection() const;
 

@@ -60,7 +60,6 @@ void ChessboardModel::renderDebug(cv::Mat& image, const Transformer& t) const
     t.projectPoints(objectPoints, imagePointsd);
 
     std::vector<cv::Point2i> imagePointsi(points2i(imagePointsd));
-    cv::polylines(image, imagePointsi, true, cv::Scalar(255, 0, 0));
 
     cv::Vec3d toOne(_cornerPoints[face.p1] - _cornerPoints[face.p0]);
     cv::Vec3d toThree(_cornerPoints[face.p3] - _cornerPoints[face.p0]);
@@ -73,19 +72,21 @@ void ChessboardModel::renderDebug(cv::Mat& image, const Transformer& t) const
 
     std::vector<cv::Point2i> normalPointsi(points2i(normalPointsd));
     cv::line(image, normalPointsi[0], normalPointsi[1], cv::Scalar(0, 255, 255));
-  }
 
-#if 0
-  std::vector<cv::Point2d> imagePointsd;
-  t.projectPoints(_cornerPoints, imagePointsd);
+    cv::Vec3d camera = t.centerOfProjection() - _cornerPoints[face.p0];
+    camera = cv::normalize(camera);
 
-  std::vector<cv::Point2i> imagePointsi = points2i(imagePointsd);
-  int n = 0;
-  for (const cv::Point2i& p : imagePointsi) {
-    cv::Scalar col = n++ < 4 ? cv::Scalar(0, 255, 0) : cv::Scalar(0, 0, 255);
-    cv::circle(image, p, 2, col, cv::FILLED);
+    //cv::Point3d cameraReach = _cornerPoints[face.p0] + cv::Point3d(camera);
+
+    //std::vector<cv::Point2d> cameraPointsd;
+    //t.projectPoints({_cornerPoints[face.p0], cameraReach}, cameraPointsd);
+
+    cv::Scalar camViewCol = normal.dot(camera) > 0 ? cv::Scalar(0, 255, 0) : cv::Scalar(0, 0, 255);
+    cv::polylines(image, imagePointsi, true, camViewCol);
+
+    //std::vector<cv::Point2i> cameraPointsi(points2i(cameraPointsd));
+    //cv::line(image, cameraPointsi[0], cameraPointsi[1], camViewCol, 20);
   }
-#endif
 }
 
 void ChessboardModel::renderFace(cv::Mat& image, const std::vector<cv::Point2d>& dstPoints) const
