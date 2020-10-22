@@ -35,21 +35,10 @@ void Transformer::projectPoints(const std::vector<cv::Point3d>& objectPoints,
 
   for (const cv::Point3d& point3d : objectPoints) {
     // Create a homogenous coordinate of the object point.
-    cv::Mat point3dH(4, 1, CV_64FC1);
-    point3dH.at<double>(0) = point3d.x;
-    point3dH.at<double>(1) = point3d.y;
-    point3dH.at<double>(2) = point3d.z;
-    point3dH.at<double>(3) = 1.0;
+    cv::Mat point3dH(toHom3d(point3d));
 
-    // Multiply the object point to get a homogenous image point.
-    cv::Mat point2dH(3, 1, CV_64FC1);
-    point2dH = matrix * point3dH;
-
-    // Normalize to euclidian image space.
-    cv::Point2d point2d
-      ( point2dH.at<double>(0) / point2dH.at<double>(2)
-      , point2dH.at<double>(1) / point2dH.at<double>(2)
-      );
+    // Multiply and normalize back to euclidian image space.
+    cv::Point2d point2d(toEucl2d(matrix * point3dH));
 
     imagePoints.push_back(point2d);
   }
@@ -115,4 +104,33 @@ cv::Mat Transformer::trans() const
   t.at<double>(2) = _E.at<double>(2, 3);
 
   return t;
+}
+
+cv::Mat Transformer::toHom3d(const cv::Point3d& point) const
+{
+  cv::Mat vec(4, 1, CV_64FC1);
+
+  vec.at<double>(0) = point.x;
+  vec.at<double>(1) = point.y;
+  vec.at<double>(2) = point.z;
+  vec.at<double>(3) = 1.0;
+
+  return vec;
+}
+
+cv::Point2d Transformer::toEucl2d(const cv::Mat& vec) const
+{
+  return
+    { vec.at<double>(0) / vec.at<double>(2)
+    , vec.at<double>(1) / vec.at<double>(2)
+    };
+}
+
+cv::Point3d Transformer::toEucl3d(const cv::Mat& vec) const
+{
+  return
+    { vec.at<double>(0) / vec.at<double>(3)
+    , vec.at<double>(1) / vec.at<double>(3)
+    , vec.at<double>(2) / vec.at<double>(3)
+    };
 }

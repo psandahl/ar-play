@@ -29,6 +29,10 @@ private:
   cv::Mat rot() const;
   cv::Mat trans() const;
 
+  cv::Mat toHom3d(const cv::Point3d& point) const;
+  cv::Point2d toEucl2d(const cv::Mat& vec) const;
+  cv::Point3d toEucl3d(const cv::Mat& vec) const;
+
   cv::Mat _K;
   cv::Mat _E;
   cv::Mat _M;
