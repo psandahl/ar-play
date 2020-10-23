@@ -50,6 +50,9 @@ private:
     int p3;
   };
 
+  cv::Vec3d normalVector(const Face& face, const Transformer& t) const;
+  cv::Vec3d cameraVector(const Face& face, const Transformer& t) const;
+
   // Render a textured face.
   void renderFace(cv::Mat& image, const std::vector<cv::Point2d>& dstPoints) const;
 

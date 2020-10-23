@@ -61,11 +61,8 @@ void ChessboardModel::renderDebug(cv::Mat& image, const Transformer& t) const
 
     std::vector<cv::Point2i> imagePointsi(points2i(imagePointsd));
 
-    cv::Vec3d toOne(_cornerPoints[face.p1] - _cornerPoints[face.p0]);
-    cv::Vec3d toThree(_cornerPoints[face.p3] - _cornerPoints[face.p0]);
-    cv::Vec3d normal = cv::normalize(toThree.cross(toOne));
-
-    cv::Point3d normReach = _cornerPoints[face.p0] + cv::Point3d(normal);
+    cv::Vec3d normal = normalVector(face, t);
+    cv::Point3d normReach = t.modelMatrixTransform(_cornerPoints[face.p0]) + cv::Point3d(normal);
 
     std::vector<cv::Point2d> normalPointsd;
     t.projectPoints({_cornerPoints[face.p0], normReach}, normalPointsd);
@@ -73,8 +70,7 @@ void ChessboardModel::renderDebug(cv::Mat& image, const Transformer& t) const
     std::vector<cv::Point2i> normalPointsi(points2i(normalPointsd));
     cv::line(image, normalPointsi[0], normalPointsi[1], cv::Scalar(0, 255, 255));
 
-    cv::Vec3d camera = t.centerOfProjection() - _cornerPoints[face.p0];
-    camera = cv::normalize(camera);
+    cv::Vec3d camera = cameraVector(face, t);
 
     //cv::Point3d cameraReach = _cornerPoints[face.p0] + cv::Point3d(camera);
 
@@ -87,6 +83,24 @@ void ChessboardModel::renderDebug(cv::Mat& image, const Transformer& t) const
     //std::vector<cv::Point2i> cameraPointsi(points2i(cameraPointsd));
     //cv::line(image, cameraPointsi[0], cameraPointsi[1], camViewCol, 20);
   }
+}
+
+cv::Vec3d ChessboardModel::normalVector(const Face& face, const Transformer& t) const
+{
+  const cv::Point3d p0(t.modelMatrixTransform(_cornerPoints[face.p0]));
+  const cv::Point3d p1(t.modelMatrixTransform(_cornerPoints[face.p1]));
+  const cv::Point3d p3(t.modelMatrixTransform(_cornerPoints[face.p3]));
+
+  const cv::Vec3d to1(p1 - p0);
+  const cv::Vec3d to3(p3 - p0);
+
+  return cv::normalize(to3.cross(to1));
+}
+
+cv::Vec3d ChessboardModel::cameraVector(const Face& face, const Transformer& t) const
+{
+  const cv::Vec3d cameraVector(t.centerOfProjection() - t.modelMatrixTransform(_cornerPoints[face.p0]));
+  return cv::normalize(cameraVector);
 }
 
 void ChessboardModel::renderFace(cv::Mat& image, const std::vector<cv::Point2d>& dstPoints) const
