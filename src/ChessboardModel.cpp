@@ -64,7 +64,7 @@ void ChessboardModel::setRotationZ(double theta)
 
 void ChessboardModel::animate()
 {
-  _theta += (3.14159 / 15.0);
+  _theta += (3.14159 / 30.0);
   setRotationZ(_theta);
 }
 
