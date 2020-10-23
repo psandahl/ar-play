@@ -37,7 +37,7 @@ ChessboardModel::ChessboardModel()
   _faces[4] = { 0, 3, 7, 4 };
   _faces[5] = { 7, 6, 5, 4 };
 
-  //setTransform(0.0, 1.0, -5.0);
+  setTransform(0.0, 1.0, -5.0);
 }
 
 void ChessboardModel::setTransform(double x, double y, double z)
@@ -45,6 +45,41 @@ void ChessboardModel::setTransform(double x, double y, double z)
   _modelMatrix.at<double>(0, 3) = x;
   _modelMatrix.at<double>(1, 3) = y;
   _modelMatrix.at<double>(2, 3) = z;
+}
+
+void ChessboardModel::render(cv::Mat& image, const Transformer& t) const
+{
+  for (const Face& face : _faces) {
+    renderFace(image, face, t);
+  }
+}
+
+void ChessboardModel::renderFace(cv::Mat& image, const Face& face, const Transformer& t) const
+{
+  if (normalVector(face, t).dot(cameraVector(face, t)) > 0.0) {
+    // Only render visible faces.
+
+    std::vector<cv::Point2d> imagePoints;
+    t.projectPoints( {
+      _cornerPoints[face.p0]
+      , _cornerPoints[face.p1]
+      , _cornerPoints[face.p2]
+      , _cornerPoints[face.p3]
+    }, imagePoints);
+
+    const std::vector<cv::Point2d> textureCorners =
+      { { 0.0       , 0.0 }
+      , { Size - 1.0, 0.0}
+      , { Size - 1.0, Size - 1.0 }
+      , { 0.0       , Size - 1.0 }
+      };
+
+    const cv::Mat H = cv::findHomography(textureCorners, imagePoints);
+    if (!H.empty()) {
+      cv::warpPerspective(_faceTexture, image, H, image.size(),
+                          cv::INTER_LINEAR, cv::BORDER_TRANSPARENT);
+    }
+  }
 }
 
 void ChessboardModel::renderDebug(cv::Mat& image, const Transformer& t) const
@@ -103,7 +138,7 @@ cv::Vec3d ChessboardModel::cameraVector(const Face& face, const Transformer& t) 
   return cv::normalize(cameraVector);
 }
 
-void ChessboardModel::renderFace(cv::Mat& image, const std::vector<cv::Point2d>& dstPoints) const
+void ChessboardModel::renderFace2(cv::Mat& image, const std::vector<cv::Point2d>& dstPoints) const
 {
   std::vector<cv::Point2f> srcPoints =
     { { 0.0,        0.0 }

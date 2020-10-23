@@ -30,6 +30,9 @@ public:
   // Set the transform for the model.
   void setTransform(double x, double y, double z);
 
+  // Render the model.
+  void render(cv::Mat& image, const Transformer& t) const;
+
   // Perform debug rendering of the model.
   void renderDebug(cv::Mat& image, const Transformer& t) const;
 
@@ -50,11 +53,13 @@ private:
     int p3;
   };
 
+  // Render a textured face.
+  void renderFace(cv::Mat& image, const Face& face, const Transformer& t) const;
+
   cv::Vec3d normalVector(const Face& face, const Transformer& t) const;
   cv::Vec3d cameraVector(const Face& face, const Transformer& t) const;
 
-  // Render a textured face.
-  void renderFace(cv::Mat& image, const std::vector<cv::Point2d>& dstPoints) const;
+  void renderFace2(cv::Mat& image, const std::vector<cv::Point2d>& dstPoints) const;
 
   // Board dimension (should be power of two, or at least even).
   static constexpr int Size = 128;

@@ -65,7 +65,7 @@ void Augmenter::runAugmentation(cv::Mat& image, const std::vector<cv::Point2f>& 
     const Transformer t(_chessboardCalib.getK(), rvec, tvec, _chessboardModel.modelMatrix());
 
     // Render the model.
-    _chessboardModel.renderDebug(image, t);
+    _chessboardModel.render(image, t);
 
     // Draw the orientation axes.
     drawOrientationAxes(image, t);
