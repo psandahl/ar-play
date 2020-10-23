@@ -5,11 +5,14 @@
 #include <opencv2/calib3d.hpp>
 #include <opencv2/imgproc.hpp>
 
+#include <cmath>
+
 ChessboardModel::ChessboardModel()
   : _faceTexture(Size, Size, CV_8UC3, cv::Scalar::all(255))
   , _modelMatrix(cv::Mat::eye(4, 4, CV_64FC1))
   , _cornerPoints(8)
   , _faces(6)
+  , _theta(0.0)
 {
   // Render the face texture.
   cv::rectangle(_faceTexture, { 0, 0 }, { Size / 2 - 1, Size / 2 - 1 },
@@ -45,6 +48,24 @@ void ChessboardModel::setTransform(double x, double y, double z)
   _modelMatrix.at<double>(0, 3) = x;
   _modelMatrix.at<double>(1, 3) = y;
   _modelMatrix.at<double>(2, 3) = z;
+}
+
+void ChessboardModel::setRotationZ(double theta)
+{
+  const double cost = std::cos(theta);
+  const double sint = std::sin(theta);
+
+  _modelMatrix.at<double>(0, 0) = cost;
+  _modelMatrix.at<double>(1, 0) = sint;
+
+  _modelMatrix.at<double>(0, 1) = -sint;
+  _modelMatrix.at<double>(1, 1) = cost;
+}
+
+void ChessboardModel::animate()
+{
+  _theta += (3.14159 / 15.0);
+  setRotationZ(_theta);
 }
 
 void ChessboardModel::render(cv::Mat& image, const Transformer& t) const

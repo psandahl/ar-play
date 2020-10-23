@@ -30,6 +30,12 @@ public:
   // Set the transform for the model.
   void setTransform(double x, double y, double z);
 
+  // Set z axis rotation (in radians).
+  void setRotationZ(double theta);
+
+  // Animate the model.
+  void animate();
+
   // Render the model.
   void render(cv::Mat& image, const Transformer& t) const;
 
@@ -74,4 +80,7 @@ private:
 
   // Cube faces.
   std::vector<Face> _faces;
+
+  // Rotation.
+  double _theta;
 };

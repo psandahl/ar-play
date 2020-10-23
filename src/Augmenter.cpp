@@ -64,6 +64,9 @@ void Augmenter::runAugmentation(cv::Mat& image, const std::vector<cv::Point2f>& 
     // Draw the covering image.
     drawCoveringImage(image, boardCornerPoints);
 
+    // Animate the model.
+    _chessboardModel.animate();
+
     // A mapping from the chessboard marker and the ground points is found.
     // Create a transformer from model coordinate to image coordinates.
     const Transformer t(_chessboardCalib.getK(), rvec, tvec, _chessboardModel.modelMatrix());
