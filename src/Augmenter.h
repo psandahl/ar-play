@@ -12,7 +12,7 @@
 class Augmenter {
 public:
   // Construction.
-  Augmenter();
+  Augmenter(cv::Mat coveringImage = cv::Mat());
 
   // Destruction.
   ~Augmenter() = default;
@@ -37,6 +37,9 @@ private:
   // Draw orientation axes.
   void drawOrientationAxes(cv::Mat& image, const Transformer& t) const;
 
+  // Draw the chessboard covering image.
+  void drawCoveringImage(cv::Mat& image, const std::vector<cv::Point2d>& chessboardCorners) const;
+
   // The size of the board - width and height.
   const cv::Size _boardSize;
 
@@ -52,4 +55,7 @@ private:
   // Model points representing ground zero, and used for pose calculation
   // from the chessboard.
   std::vector<cv::Point3d> _groundPoints;
+
+  // A covering image for the detected chessboard.
+  const cv::Mat _coveringImage;
 };

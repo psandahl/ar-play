@@ -11,6 +11,7 @@ int main(int argc, char** argv)
 {
   const char* params =
     "{ help h  | | print help information }"
+    "{ image i | | path to the covering image }"
     "{ video v | | path to the video to be played }";
 
   cv::CommandLineParser parser(argc, argv, params);
@@ -19,9 +20,17 @@ int main(int argc, char** argv)
     return -1;
   }
 
-  if (parser.has("help") || !parser.has("video")) {
+  if (parser.has("help") || !parser.has("image") || !parser.has("video")) {
     parser.about("AR playground");
     parser.printMessage();
+    return -1;
+  }
+
+  const std::string imagePath(parser.get<std::string>("image"));
+  cv::Mat coveringImage(cv::imread(imagePath, cv::IMREAD_COLOR));
+  if (coveringImage.empty()) {
+    std::cerr << "Failed to open image '" << imagePath
+              << "'" << std::endl;
     return -1;
   }
 
@@ -36,7 +45,7 @@ int main(int argc, char** argv)
   const std::string window("Augmented Reality Play");
   cv::namedWindow(window);
 
-  Augmenter augmenter;
+  Augmenter augmenter(coveringImage);
   cv::Mat frame;
   while (capture.read(frame)) {
     cv::imshow(window, augmenter.process(frame));

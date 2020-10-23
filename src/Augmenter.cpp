@@ -7,12 +7,13 @@
 #include <iostream>
 #include <vector>
 
-Augmenter::Augmenter()
+Augmenter::Augmenter(cv::Mat coveringImage)
   : _boardSize(9, 6)
   , _chessboardCalib(_boardSize, 0.025)
   , _chessboardDetect(_boardSize)
   , _chessboardModel()
   , _groundPoints(4)
+  , _coveringImage(coveringImage)
 {
   const double halfWidth = double(_boardSize.width) * 0.5;
   const double halfHeight = double(_boardSize.height) * 0.5;
@@ -60,6 +61,9 @@ void Augmenter::runAugmentation(cv::Mat& image, const std::vector<cv::Point2f>& 
   if (cv::solvePnP(_groundPoints, boardCornerPoints, _chessboardCalib.getK()
                   , _chessboardCalib.getDistCoeffs(), rvec, tvec)) {
 
+    // Draw the covering image.
+    drawCoveringImage(image, boardCornerPoints);
+
     // A mapping from the chessboard marker and the ground points is found.
     // Create a transformer from model coordinate to image coordinates.
     const Transformer t(_chessboardCalib.getK(), rvec, tvec, _chessboardModel.modelMatrix());
@@ -68,7 +72,7 @@ void Augmenter::runAugmentation(cv::Mat& image, const std::vector<cv::Point2f>& 
     _chessboardModel.render(image, t);
 
     // Draw the orientation axes.
-    drawOrientationAxes(image, t);
+    //drawOrientationAxes(image, t);
   }
 }
 
@@ -88,4 +92,27 @@ void Augmenter::drawOrientationAxes(cv::Mat& image, const Transformer& t) const
   cv::line(image, imageSpaceAxesi[0], imageSpaceAxesi[1], cv::Scalar(0, 0, 255), 3);
   cv::line(image, imageSpaceAxesi[0], imageSpaceAxesi[2], cv::Scalar(0, 255, 0), 3);
   cv::line(image, imageSpaceAxesi[0], imageSpaceAxesi[3], cv::Scalar(255, 0, 0), 3);
+}
+
+void Augmenter::drawCoveringImage(cv::Mat& image, const std::vector<cv::Point2d>& chessboardCorners) const
+{
+  if (!_coveringImage.empty()) {
+    const double width = double(_coveringImage.size().width);
+    const double height = double(_coveringImage.size().height);
+    const double xmargin = width * 0.2;
+    const double ymargin = height * 0.2;
+
+    const std::vector<cv::Point2d> imageCorners =
+      { { xmargin              , ymargin }
+      , { width - xmargin - 1.0, ymargin }
+      , { width - xmargin - 1.0, height - ymargin - 1.0 }
+      , { xmargin              , height - ymargin - 1.0 }
+      };
+
+    const cv::Mat H = cv::findHomography(imageCorners, chessboardCorners);
+    if (!H.empty()) {
+      cv::warpPerspective(_coveringImage, image, H, image.size(),
+                          cv::INTER_LINEAR, cv::BORDER_TRANSPARENT);
+    }
+  }
 }
