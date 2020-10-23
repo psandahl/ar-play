@@ -33,11 +33,9 @@ public:
   // Render the model.
   void render(cv::Mat& image, const Transformer& t) const;
 
-  // Perform debug rendering of the model.
-  void renderDebug(cv::Mat& image, const Transformer& t) const;
-
 private:
 
+  // Struct to describe a face.
   struct Face {
     Face()
       : p0(0), p1(0), p2(0), p3(0)
@@ -56,10 +54,11 @@ private:
   // Render a textured face.
   void renderFace(cv::Mat& image, const Face& face, const Transformer& t) const;
 
+  // Calculate the normal vector for the face.
   cv::Vec3d normalVector(const Face& face, const Transformer& t) const;
-  cv::Vec3d cameraVector(const Face& face, const Transformer& t) const;
 
-  void renderFace2(cv::Mat& image, const std::vector<cv::Point2d>& dstPoints) const;
+  // Calculate the vector from the plane corner zero towards the camera.
+  cv::Vec3d cameraVector(const Face& face, const Transformer& t) const;
 
   // Board dimension (should be power of two, or at least even).
   static constexpr int Size = 128;

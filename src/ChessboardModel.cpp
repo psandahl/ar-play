@@ -82,44 +82,6 @@ void ChessboardModel::renderFace(cv::Mat& image, const Face& face, const Transfo
   }
 }
 
-void ChessboardModel::renderDebug(cv::Mat& image, const Transformer& t) const
-{
-  for (const Face& face : _faces) {
-    std::vector<cv::Point3d> objectPoints =
-      { _cornerPoints[face.p0]
-      , _cornerPoints[face.p1]
-      , _cornerPoints[face.p2]
-      , _cornerPoints[face.p3]
-      };
-    std::vector<cv::Point2d> imagePointsd;
-    t.projectPoints(objectPoints, imagePointsd);
-
-    std::vector<cv::Point2i> imagePointsi(points2i(imagePointsd));
-
-    cv::Vec3d normal = normalVector(face, t);
-    cv::Point3d normReach = t.modelMatrixTransform(_cornerPoints[face.p0]) + cv::Point3d(normal);
-
-    std::vector<cv::Point2d> normalPointsd;
-    t.projectPoints({_cornerPoints[face.p0], normReach}, normalPointsd);
-
-    std::vector<cv::Point2i> normalPointsi(points2i(normalPointsd));
-    cv::line(image, normalPointsi[0], normalPointsi[1], cv::Scalar(0, 255, 255));
-
-    cv::Vec3d camera = cameraVector(face, t);
-
-    //cv::Point3d cameraReach = _cornerPoints[face.p0] + cv::Point3d(camera);
-
-    //std::vector<cv::Point2d> cameraPointsd;
-    //t.projectPoints({_cornerPoints[face.p0], cameraReach}, cameraPointsd);
-
-    cv::Scalar camViewCol = normal.dot(camera) > 0 ? cv::Scalar(0, 255, 0) : cv::Scalar(0, 0, 255);
-    cv::polylines(image, imagePointsi, true, camViewCol);
-
-    //std::vector<cv::Point2i> cameraPointsi(points2i(cameraPointsd));
-    //cv::line(image, cameraPointsi[0], cameraPointsi[1], camViewCol, 20);
-  }
-}
-
 cv::Vec3d ChessboardModel::normalVector(const Face& face, const Transformer& t) const
 {
   const cv::Point3d p0(t.modelMatrixTransform(_cornerPoints[face.p0]));
@@ -136,19 +98,4 @@ cv::Vec3d ChessboardModel::cameraVector(const Face& face, const Transformer& t) 
 {
   const cv::Vec3d cameraVector(t.centerOfProjection() - t.modelMatrixTransform(_cornerPoints[face.p0]));
   return cv::normalize(cameraVector);
-}
-
-void ChessboardModel::renderFace2(cv::Mat& image, const std::vector<cv::Point2d>& dstPoints) const
-{
-  std::vector<cv::Point2f> srcPoints =
-    { { 0.0,        0.0 }
-    , { Size - 1.0, 0.0}
-    , { Size - 1.0, Size - 1.0}
-    , { 0.0,        Size - 1.0 }
-    };
-  cv::Mat H = cv::findHomography(srcPoints, dstPoints);
-  if (!H.empty()) {
-    cv::warpPerspective(_faceTexture, image, H, image.size(),
-                        cv::INTER_LINEAR, cv::BORDER_TRANSPARENT);
-  }
 }
