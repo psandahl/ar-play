@@ -43,8 +43,8 @@ cv::Mat Augmenter::process(const cv::Mat& frame)
 
 void Augmenter::runCalibration(cv::Mat& image, const std::vector<cv::Point2f>& chessboardPoints)
 {
-  std::vector<cv::Point2i> cornerPoints = points2i(_chessboardDetect.cornerPoints(chessboardPoints));
-  cv::polylines(image, cornerPoints, true, cv::Scalar(0, 0, 255));
+  //std::vector<cv::Point2i> cornerPoints = points2i(_chessboardDetect.cornerPoints(chessboardPoints));
+  //cv::polylines(image, cornerPoints, true, cv::Scalar(0, 0, 255));
   _chessboardCalib.addImagePoints(chessboardPoints, image.size());
 }
 
@@ -103,7 +103,7 @@ void Augmenter::drawCoveringImage(cv::Mat& image, const std::vector<cv::Point2d>
     const double width = double(_coveringImage.size().width);
     const double height = double(_coveringImage.size().height);
     const double xmargin = width * 0.2;
-    const double ymargin = height * 0.2;
+    const double ymargin = height * 0.22;
 
     const std::vector<cv::Point2d> imageCorners =
       { { xmargin              , ymargin }

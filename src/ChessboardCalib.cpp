@@ -8,6 +8,7 @@ ChessboardCalib::ChessboardCalib(const cv::Size& size, float meters)
   , _K(cv::Mat::eye(3, 3, CV_64FC1))
   , _distCoeffs(cv::Mat::zeros(5, 1, CV_64FC1))
   , _imagePointsCollection()
+  , _nthFrame(0)
   , _isCalibrated(false)
 {
 }
@@ -15,10 +16,14 @@ ChessboardCalib::ChessboardCalib(const cv::Size& size, float meters)
 void ChessboardCalib::addImagePoints(const std::vector<cv::Point2f>& imagePoints, const cv::Size& imageSize)
 {
   if (!isCalibrated()) {
+    if (++_nthFrame < 5) return;
+
+    _nthFrame = 0;
+
     // TODO: Check that the camera poses are different.
     _imagePointsCollection.push_back(imagePoints);
 
-    if (_imagePointsCollection.size() == 25) {
+    if (_imagePointsCollection.size() == _neededPoints) {
       ObjectPoints objectPoints;
       generateChessboard(objectPoints);
 

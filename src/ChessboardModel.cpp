@@ -8,7 +8,7 @@
 #include <cmath>
 
 ChessboardModel::ChessboardModel()
-  : _faceTexture(Size, Size, CV_8UC3, cv::Scalar::all(255))
+  : _faceTexture(Size, Size, CV_8UC3, cv::Scalar(240, 255, 255))
   , _modelMatrix(cv::Mat::eye(4, 4, CV_64FC1))
   , _cornerPoints(8)
   , _faces(6)

@@ -54,5 +54,11 @@ private:
   // The collection of image points.
   std::vector<ImagePoints> _imagePointsCollection;
 
+  // Needed points for calibration.
+  static constexpr int _neededPoints = 25;
+
+  // Nth frame counter.
+  int _nthFrame;
+
   bool _isCalibrated;
 };
